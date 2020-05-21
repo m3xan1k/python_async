@@ -27,6 +27,7 @@ def send_message(client_socket):
     if not request:
         print(client_socket, 'disconnected')
         client_socket.close()
+        to_monitor.pop(to_monitor.index(client_socket))
     else:
         response = str(request).upper().encode()
         client_socket.send(response)
@@ -36,7 +37,8 @@ def event_loop():
     while True:
 
         # get sockets that are ready for reading(has data to read)
-        ready_to_read, _, _ = select(to_monitor, [], [])
+        if to_monitor:
+            ready_to_read, _, _ = select(to_monitor, [], [])
 
         for sock in ready_to_read:
             if sock is server_socket:
